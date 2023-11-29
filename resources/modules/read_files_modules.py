@@ -34,7 +34,7 @@ def obtener_archivos_de_video(directorio):
                 nombre = re.sub(r'\[.*?\]|\(.*?\)', ' ', nombre)
 
                 ruta_completa = os.path.join(directorio, archivo)
-                numeros = re.findall(r'\d+', nombre)
+                numeros = re.findall(r'(?<!\d)0*(\d+)', nombre)
                 numeros = [int(num)
                            for num in numeros if len(str(num)) <= digitos]
                 numeros = list(set(numeros))
@@ -98,7 +98,24 @@ def obtener_subcarpetas_recursivas(directorio=None):
         return obtener_subcarpetas_recursivas, directorio
 
 
-def imprimir_json(json_data):
-    parsed_json = json.loads(json_data)
-    formatted_json = json.dumps(parsed_json, indent=4)
-    print(formatted_json)
+def imprimir_json():
+    # Primero, obtén el directorio que contiene archivos de video
+    subcarpetas, directorio = obtener_subcarpetas_recursivas()
+
+    # Verifica si se encontraron subcarpetas con archivos de video
+    if subcarpetas:
+        # Elige una subcarpeta para obtener archivos de video
+        # Puedes elegir cualquier índice que desees
+        subdirectorio = subcarpetas[0]
+
+        # Obtén los datos de los archivos de video en la subcarpeta seleccionada
+        json_data = obtener_archivos_de_video(subdirectorio)
+
+        # Verifica si se obtuvo algún dato en formato JSON
+        if json_data:
+            # Imprime el JSON obtenido
+            print(json_data)
+        else:
+            print("No se encontraron archivos de video en la subcarpeta seleccionada.")
+    else:
+        print("No se encontraron subcarpetas con archivos de video en el directorio proporcionado.")
